@@ -1,0 +1,282 @@
+@import "tailwindcss";
+
+/* ── Theme CSS Variables ─────────────────────────────────────────────────── */
+
+:root {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-surface2: #252836;
+  --color-border: #2d3149;
+  --color-text: #e8eaf0;
+  --color-text-muted: #9499b0;
+  --color-text-subtle: #555a72;
+  --color-primary: #6c8ef7;
+  --color-primary-hover: #8aabff;
+  --color-correct: #4ade80;
+  --color-incorrect: #f87171;
+  --color-current: #e8eaf0;
+  --color-extra: #fb923c;
+  --color-missed: #6b7280;
+  --color-caret: #6c8ef7;
+  --color-accent: #a78bfa;
+}
+
+/* ── Tailwind Theme Mapping ───────────────────────────────────────────────── */
+
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+}
+
+/* ── Global Base ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100dvh;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* ── Typing Character States ─────────────────────────────────────────────── */
+
+.char-untyped   { color: var(--color-text-subtle); opacity: var(--upcoming-opacity, 1); }
+.char-current   { color: var(--color-current); }
+.char-correct   { color: var(--color-correct); opacity: var(--completed-opacity, 1); }
+.char-incorrect { color: var(--color-incorrect); background-color: color-mix(in srgb, var(--color-incorrect) 15%, transparent); border-radius: 2px; opacity: var(--completed-opacity, 1); }
+.char-extra     { color: var(--color-extra); text-decoration: underline; opacity: var(--completed-opacity, 1); }
+.char-missed    { color: var(--color-missed); text-decoration: underline wavy; }
+
+/* ── Caret ───────────────────────────────────────────────────────────────── */
+
+.caret-line {
+  border-left: var(--cursor-thickness, 2px) solid var(--color-caret);
+  margin-left: -1px;
+  animation: blink var(--cursor-blink-speed, 1.1s) step-end infinite;
+}
+.caret-block {
+  background-color: color-mix(in srgb, var(--color-caret) 40%, transparent);
+  outline: var(--cursor-thickness, 1px) solid var(--color-caret);
+  border-radius: 2px;
+  animation: blink var(--cursor-blink-speed, 1.1s) step-end infinite;
+}
+.caret-underline {
+  border-bottom: var(--cursor-thickness, 2px) solid var(--color-caret);
+  animation: blink var(--cursor-blink-speed, 1.1s) step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Stop blinking while typing */
+.typing .caret-line,
+.typing .caret-block,
+.typing .caret-underline {
+  animation: none;
+  opacity: 1;
+}
+
+/* ── Glass card ──────────────────────────────────────────────────────────── */
+
+.glass {
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+/* ── Gradient text ───────────────────────────────────────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow effect ─────────────────────────────────────────────────────────── */
+
+.glow {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+.glow-text {
+  text-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 60%, transparent);
+}
+
+/* ── Focus ring ──────────────────────────────────────────────────────────── */
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Transition helper ───────────────────────────────────────────────────── */
+
+.theme-transition {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px color-mix(in srgb, var(--color-primary) 30%, transparent); }
+  50%       { box-shadow: 0 0 25px color-mix(in srgb, var(--color-primary) 60%, transparent); }
+}
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.4s ease forwards; }
+.animate-fade-in    { animation: fadeIn 0.3s ease forwards; }
+.animate-slide-right { animation: slideInRight 0.3s ease forwards; }
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-pop { animation: pop 0.15s ease; }
+
+/* ── Font size helpers ───────────────────────────────────────────────────── */
+
+.font-size-sm { font-size: 14px; line-height: 1.7; }
+.font-size-md { font-size: 18px; line-height: 1.7; }
+.font-size-lg { font-size: 22px; line-height: 1.75; }
+.font-size-xl { font-size: 26px; line-height: 1.8; }
+
+/* ── Line spacing helpers ────────────────────────────────────────────────── */
+
+.line-spacing-tight   { line-height: 1.4; }
+.line-spacing-normal  { line-height: 1.7; }
+.line-spacing-relaxed { line-height: 2.1; }
+
+/* ── Char spacing helpers ────────────────────────────────────────────────── */
+
+.char-spacing-tight  { letter-spacing: -0.03em; }
+.char-spacing-normal { letter-spacing: 0; }
+.char-spacing-wide   { letter-spacing: 0.06em; }
+
+/* ── Font family helpers ─────────────────────────────────────────────────── */
+
+.font-family-mono  { font-family: var(--font-mono), 'JetBrains Mono', 'Fira Code', monospace; }
+.font-family-sans  { font-family: var(--font-sans), 'Inter', system-ui, sans-serif; }
+.font-family-serif { font-family: 'Georgia', 'Times New Roman', serif; }
+
+/* ── Blur completed text ─────────────────────────────────────────────────── */
+
+.blur-completed .char-correct,
+.blur-completed .char-incorrect {
+  filter: blur(3px);
+  transition: filter 0.15s ease;
+}
+.blur-completed .char-correct:hover,
+.blur-completed .char-incorrect:hover {
+  filter: blur(0);
+}
+
+/* ── Additional font families ─────────────────────────────────────────────── */
+
+.font-family-rounded {
+  font-family: 'Nunito', 'Poppins', 'Quicksand', system-ui, sans-serif;
+}
+.font-family-dyslexic {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Arial', sans-serif;
+  letter-spacing: 0.04em;
+  word-spacing: 0.1em;
+}
+
+/* ── Accessibility: Reduced Motion ────────────────────────────────────────── */
+
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ── Accessibility: No Animations ─────────────────────────────────────────── */
+
+.no-animations *,
+.no-animations *::before,
+.no-animations *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ── Accessibility: High Contrast ─────────────────────────────────────────── */
+
+.high-contrast .glass {
+  background: var(--color-surface) !important;
+  backdrop-filter: none !important;
+  border: 2px solid var(--color-border) !important;
+}
+.high-contrast .gradient-text {
+  background: none !important;
+  -webkit-text-fill-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+.high-contrast button,
+.high-contrast a {
+  outline: 2px solid var(--color-primary) !important;
+  outline-offset: 1px;
+}
+
+/* ── Learn module: finger color classes ───────────────────────────────────── */
+
+.finger-left-pinky   { color: #f87171; }
+.finger-left-ring    { color: #fb923c; }
+.finger-left-middle  { color: #facc15; }
+.finger-left-index   { color: #4ade80; }
+.finger-right-index  { color: #a78bfa; }
+.finger-right-middle { color: #f472b6; }
+.finger-right-ring   { color: #34d399; }
+.finger-right-pinky  { color: #94a3b8; }
+.finger-thumb        { color: #60a5fa; }
