@@ -6,6 +6,7 @@ import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 import TimerSelector from '@/components/ui/TimerSelector';
 import DifficultySelector from '@/components/ui/DifficultySelector';
 import { useSettingsStore } from '@/store/useSettingsStore';
+import Image from 'next/image';
 
 const NAV_LINKS = [
   { href: '/test',     label: 'Type',       id: 'nav-test' },
@@ -33,12 +34,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16 gap-4">
         {/* Logo */}
         <Link href="/" id="nav-logo" className="flex items-center gap-2 flex-shrink-0 focus-ring rounded-lg p-1">
-          <div
+          {/* <div
             className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm"
             style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}
           >
             TF
-          </div>
+          </div> */}
+          <Image src="/images/logo.png" alt='Type Future' width={16} height={14} className='w-16 h-14' />
           <span className="font-bold text-lg hidden sm:block" style={{ color: 'var(--color-text)' }}>
             TypeFuture
           </span>
