@@ -38,12 +38,16 @@ function LevelCard({
   level,
   locked,
   completed,
+  completedLessons,
   onStart,
+  onStartLesson,
 }: {
   level: Level;
   locked: boolean;
   completed: boolean;
+  completedLessons: string[];
   onStart: () => void;
+  onStartLesson: (level: number, lesson: Lesson) => void;
 }) {
   return (
     <motion.div
@@ -80,18 +84,31 @@ function LevelCard({
 
       {/* Lessons */}
       <div className="flex flex-col gap-1.5">
-        {level.lessons.map(lesson => (
-          <div
-            key={lesson.id}
-            className="flex items-center justify-between px-3 py-2 rounded-lg text-xs"
-            style={{ background: 'var(--color-surface2)', border: '1px solid var(--color-border)' }}
-          >
-            <span style={{ color: 'var(--color-text)' }}>{lesson.title}</span>
-            <span style={{ color: 'var(--color-text-muted)' }}>
-              {lesson.exercises.length} exercises
-            </span>
-          </div>
-        ))}
+        {level.lessons.map(lesson => {
+          const isLessonDone = completedLessons.includes(lesson.id);
+          return (
+            <button
+              key={lesson.id}
+              disabled={locked}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!locked) onStartLesson(level.id, lesson);
+              }}
+              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs text-left transition-all ${
+                !locked ? 'hover:brightness-110 cursor-pointer' : 'cursor-not-allowed'
+              }`}
+              style={{ background: 'var(--color-surface2)', border: '1px solid var(--color-border)' }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xs">{isLessonDone ? '✅' : locked ? '🔒' : '▶'}</span>
+                <span style={{ color: 'var(--color-text)' }}>{lesson.title}</span>
+              </div>
+              <span style={{ color: 'var(--color-text-muted)' }}>
+                {lesson.exercises.length} exercises
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {!locked && (
@@ -104,7 +121,7 @@ function LevelCard({
               : `linear-gradient(135deg, ${level.color}, ${level.color}bb)`,
           }}
         >
-          {completed ? '🔁 Replay' : '▶ Start Level'}
+          {completed ? '🔁 Replay Level' : '▶ Start Level'}
         </button>
       )}
       {locked && (
@@ -134,9 +151,10 @@ export default function Dashboard({ onStartLesson }: DashboardProps) {
   const bestAcc = allAcc.length > 0 ? Math.max(...allAcc) : 0;
 
   const handleStartLevel = (level: Level) => {
-    // Start first lesson of this level
+    // Start first uncompleted lesson of this level, or first if all complete
     if (level.lessons.length > 0) {
-      onStartLesson(level.id, level.lessons[0]);
+      const nextUncompleted = level.lessons.find(l => !completedLessons.includes(l.id)) ?? level.lessons[0];
+      onStartLesson(level.id, nextUncompleted);
     }
   };
 
@@ -196,7 +214,9 @@ export default function Dashboard({ onStartLesson }: DashboardProps) {
                 level={level}
                 locked={locked}
                 completed={allDone}
+                completedLessons={completedLessons}
                 onStart={() => handleStartLevel(level)}
+                onStartLesson={onStartLesson}
               />
             );
           })}

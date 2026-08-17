@@ -1,20 +1,27 @@
 'use client';
 
 import { useLearnStore, getActiveExercise } from '@/store/useLearnStore';
-import { ACHIEVEMENTS } from '@/data/lessons';
+import { ACHIEVEMENTS, LEVELS, Lesson } from '@/data/lessons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LessonCompleteModalProps {
   onContinue: () => void;
   onRetry: () => void;
   onBackToDashboard: () => void;
+  onStartLesson?: (level: number, lesson: Lesson) => void;
 }
 
-export default function LessonCompleteModal({ onContinue, onRetry, onBackToDashboard }: LessonCompleteModalProps) {
+export default function LessonCompleteModal({ onContinue, onRetry, onBackToDashboard, onStartLesson }: LessonCompleteModalProps) {
   const {
-    activeLesson, activeExerciseIndex, sessionStats, sessionStatus,
+    activeLevel, activeLesson, activeExerciseIndex, sessionStats, sessionStatus,
     newlyUnlockedAchievements, dismissNewAchievements,
   } = useLearnStore();
+
+  const currentLevel = activeLevel ? LEVELS.find(l => l.id === activeLevel) : null;
+  const currentLessonIndex = currentLevel?.lessons.findIndex(l => l.id === activeLesson?.id) ?? -1;
+  const nextLessonInLevel = (currentLevel && currentLessonIndex >= 0 && currentLessonIndex + 1 < currentLevel.lessons.length)
+    ? currentLevel.lessons[currentLessonIndex + 1]
+    : null;
 
   const exercise = getActiveExercise(activeLesson, activeExerciseIndex);
   const isPassed = exercise
@@ -33,6 +40,15 @@ export default function LessonCompleteModal({ onContinue, onRetry, onBackToDashb
       onBackToDashboard();
     } else {
       onContinue();
+    }
+  };
+
+  const handleNextLesson = () => {
+    dismissNewAchievements();
+    if (nextLessonInLevel && activeLevel && onStartLesson) {
+      onStartLesson(activeLevel, nextLessonInLevel);
+    } else {
+      onBackToDashboard();
     }
   };
 
@@ -157,17 +173,30 @@ export default function LessonCompleteModal({ onContinue, onRetry, onBackToDashb
                 Next Exercise →
               </button>
             )}
-            {(isLessonComplete || !isPassed) && (
+            {isLessonComplete && nextLessonInLevel && onStartLesson && (
               <button
-                onClick={onBackToDashboard}
+                onClick={handleNextLesson}
                 className="flex-1 py-3 rounded-xl font-bold text-sm text-white transition-all duration-200 hover:scale-105 focus-ring"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
                 }}
               >
-                {isLessonComplete ? '🏠 Dashboard' : '📋 Dashboard'}
+                Next Lesson →
               </button>
             )}
+            <button
+              onClick={onBackToDashboard}
+              className={`${isLessonComplete && nextLessonInLevel ? 'px-4' : 'flex-1'} py-3 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-105 focus-ring`}
+              style={{
+                background: (isLessonComplete && nextLessonInLevel)
+                  ? 'var(--color-surface2)'
+                  : 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
+                color: (isLessonComplete && nextLessonInLevel) ? 'var(--color-text)' : '#fff',
+                border: (isLessonComplete && nextLessonInLevel) ? '1px solid var(--color-border)' : undefined,
+              }}
+            >
+              🏠 Dashboard
+            </button>
           </div>
         </motion.div>
       </motion.div>

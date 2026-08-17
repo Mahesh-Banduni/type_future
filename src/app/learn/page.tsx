@@ -147,6 +147,7 @@ export default function LearnPage() {
           onContinue={handleContinue}
           onRetry={handleRetry}
           onBackToDashboard={handleBackToDashboard}
+          onStartLesson={handleStartLesson}
         />
       )}
     </>
